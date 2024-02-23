@@ -24,8 +24,11 @@ namespace ft
                 const T& value = T());
             vector(const vector &other);
             vector( vector&& other ) noexcept;
-            vector &operator=(const vector &other);
+            // vector( std::initializer_list<T> init, 
+                // const Allocator& alloc = Allocator() );
             ~vector();
+
+            vector &operator=(const vector &other) noexcept;
 
         public:
             reference operator[](size_type pos);
@@ -33,6 +36,9 @@ namespace ft
             size_type size() const noexcept;
         public:
             allocator_type get_allocator() const noexcept;
+        /* Modifiers */
+        public:
+            void clear() noexcept;
         /* Member functions (Iterators) */
         private:
             value_type * _arr;

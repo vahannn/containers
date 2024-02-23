@@ -38,7 +38,14 @@ namespace	ft
     };
 
     template <typename T, typename Allocator>
-    vector<T, Allocator>::~vector() {};
+    vector<T, Allocator>::~vector()
+    {
+        for (size_type i = 0; i < _size; i++) {
+            _alloc.destroy(_arr + i);
+        }
+        if (_arr)
+            _alloc.deallocate(_arr, _cap);
+    };
 
 
     template <typename T, typename Allocator>
@@ -68,6 +75,36 @@ namespace	ft
         _arr = other._arr;
         // TODO clear other
         other._arr = NULL;
+    };
+
+    template <typename T, typename Allocator>
+    vector<T, Allocator> &vector<T, Allocator>::operator=(const vector &other) noexcept
+    {
+        if (this != &other)
+        {
+            if (_arr)
+                this->clear();
+            _alloc.deallocate(_arr, _cap);
+            _alloc = other._alloc;
+            _arr = other._size != 0 ? _alloc.allocate(other._size) : NULL;
+            _size = other._size;
+            _cap = other._cap;
+
+            for (size_type i = 0; i < other._size; i++) {
+                _alloc.construct(_arr + i, other._arr[i]);
+            }
+        }
+        return (*this);
+    };
+
+    /* Modifiers */
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::clear() noexcept
+    {
+        for (size_type i = 0; i < _size; i++) {
+            _alloc.destroy(_arr + i);
+        }
+        _size = 0;
     };
 
 }
