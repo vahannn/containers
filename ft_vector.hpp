@@ -29,7 +29,11 @@ namespace ft
             ~vector();
 
             vector &operator=(const vector &other) noexcept;
-
+            void assign( size_type count, const T& value );
+        /* Capacity */
+        public:
+            void reserve(size_type new_cap);
+        /* Element access */
         public:
             reference operator[](size_type pos);
         public:
@@ -38,6 +42,7 @@ namespace ft
             allocator_type get_allocator() const noexcept;
         /* Modifiers */
         public:
+            void push_back(const T& value);
             void clear() noexcept;
         /* Member functions (Iterators) */
         private:

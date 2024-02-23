@@ -82,9 +82,10 @@ namespace	ft
     {
         if (this != &other)
         {
-            if (_arr)
+            if (_arr) {
                 this->clear();
-            _alloc.deallocate(_arr, _cap);
+                _alloc.deallocate(_arr, _cap);
+            }
             _alloc = other._alloc;
             _arr = other._size != 0 ? _alloc.allocate(other._size) : NULL;
             _size = other._size;
@@ -97,7 +98,54 @@ namespace	ft
         return (*this);
     };
 
+    // template <typename T, typename Allocator>
+    // void vector<T, Allocator>::assign(size_type count, const T& value)
+    // {
+    //     if (_arr) {
+    //         this->clear();
+    //         _alloc.deallocate(_arr, _cap);
+    //     }
+    //     _arr = other._size != 0 ? _alloc.allocate(other._size) : NULL;
+    //     _size = other._size;
+    //     _cap = other._cap;
+
+    //     for (size_type i = 0; i < other._size; i++) {
+    //         _alloc.construct(_arr + i, other._arr[i]);
+    //     }
+    // };
+
     /* Modifiers */
+    // template <typename T, typename Allocator>
+    // void vector<T, Allocator>::push_back(const T& value)
+    // {
+    //     if (_size >= _cap) {
+    //         _alloc.
+    //     }
+    // };
+
+     /* Capacity */
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::reserve(size_type new_cap)
+    {
+        if (new_cap < _cap || new_cap == 0) {
+            return ;
+        }
+        if (new_cap >= _alloc.max_size()) {
+            throw std::length_error("cannot allocate vector of size" + std::to_string(new_cap));
+        }
+
+        pointer tmpArr = _alloc.allocate(new_cap);
+
+        for (size_type i = 0; i < new_cap; i++) {
+            _alloc.construct(tmpArr + i, _arr[i]);
+            _alloc.destroy(_arr + i);
+        }
+        _alloc.deallocate(_arr, _cap);
+        _arr = tmpArr;
+        _cap = new_cap;
+
+    };
+
     template <typename T, typename Allocator>
     void vector<T, Allocator>::clear() noexcept
     {
