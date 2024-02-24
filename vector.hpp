@@ -58,6 +58,9 @@ namespace ft
             void clear() noexcept;
             void push_back(const T& value);
             void pop_back();
+            // template< class... Args >
+            // reference emplace_back( Args&&... args );
+            void swap(vector& other) noexcept;
         /* Member functions (Iterators) */
         private:
             value_type * _arr;
@@ -66,6 +69,9 @@ namespace ft
             allocator_type _alloc;
 
     };
-
+    /* Non-member functions */
+    template<typename T, typename Allocator>
+    bool operator==( const vector<T, Allocator>& lhs,
+                 const vector<T, Allocator>& rhs );
 }
-# include "ft_vector.tpp"
+# include "vector.tpp"

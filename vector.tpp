@@ -46,6 +46,8 @@ namespace	ft
         _cap = other._cap;
         _arr = other._arr;
         other.clear();
+        other._arr = NULL;
+        other._cap = 0;
     };
 
     template <typename T, typename Allocator>
@@ -170,23 +172,6 @@ namespace	ft
     //     }
     // };
 
-    /* Modifiers */
-    template <typename T, typename Allocator>
-    void vector<T, Allocator>::push_back(const T& value)
-    {
-        if (_size >= _cap) {
-            _cap = _cap * 2 > _alloc.max_size() ? _alloc.max_size() : _cap * 2;
-            this->reserve(_cap);
-        }
-
-        _alloc.construct(_arr + _size++, value);
-    };
-
-    template <typename T, typename Allocator>
-    void vector<T, Allocator>::pop_back()
-    {
-        _alloc.destroy(_arr + _size--);
-    };
 
     /* Capacity */
 
@@ -219,7 +204,7 @@ namespace	ft
 
         pointer tmpArr = _alloc.allocate(new_cap);
 
-        for (size_type i = 0; i < new_cap; i++) {
+        for (size_type i = 0; i < _size; i++) {
             _alloc.construct(tmpArr + i, _arr[i]);
             _alloc.destroy(_arr + i);
         }
@@ -256,8 +241,56 @@ namespace	ft
         for (size_type i = 0; i < _size; i++) {
             _alloc.destroy(_arr + i);
         }
-        _arr = NULL;
         _size = 0;
     };
 
+    /* Modifiers */
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::push_back(const T& value)
+    {
+        // std::cout << "_size = " << _size << std::endl;
+        // std::cout << "_cap = " << _cap << std::endl;
+        if (_size >= _cap) {
+            if (_cap == 0)
+                _cap = 1;
+            else
+                _cap = _cap * 2 > _alloc.max_size() ? _alloc.max_size() : _cap * 2;
+            this->reserve(_cap);
+        }
+
+        _alloc.construct(_arr + _size++, value);
+    };
+
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::pop_back()
+    {
+        _alloc.destroy(_arr + --_size);
+    };
+
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::swap(vector& other) noexcept
+    {
+        std::swap(_arr, other._arr);
+        std::swap(_size, other._size);
+        std::swap(_cap, other._cap);
+        std::swap(_alloc, other._alloc);
+    };
+
+    /* Non-member functions */
+    template<typename T, typename Allocator>
+    bool operator==( const vector<T, Allocator>& lhs,
+                    const vector<T, Allocator>& rhs )
+    {
+        if (lhs.size() != rhs.size()) {
+            return (false);
+        }
+        size_t len = lhs.size();
+
+        for (size_t i = 0; i < len; i++) {
+            if (lhs[i] != rhs[i]) {
+                return (false);
+            }
+        }
+        return (true);
+    };
 }
