@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <list>
 namespace ft
 {
     template <typename T, typename Allocator = std::allocator<T> >
@@ -30,20 +31,33 @@ namespace ft
 
             vector &operator=(const vector &other) noexcept;
             void assign( size_type count, const T& value );
-        /* Capacity */
-        public:
-            void reserve(size_type new_cap);
         /* Element access */
         public:
+            reference at( size_type pos );
+            const_reference at( size_type pos ) const;
             reference operator[](size_type pos);
-        public:
-            size_type size() const noexcept;
+            const_reference operator[](size_type pos) const;
+            reference front();
+            const_reference front() const;
+            reference back();
+            const_reference back() const;
+            T* data() noexcept;
+            const T* data() const;
         public:
             allocator_type get_allocator() const noexcept;
+        /* Capacity */
+        public:
+            bool empty() const noexcept;
+            size_type size() const noexcept;
+            size_type max_size() const noexcept;
+            void reserve(size_type new_cap);
+            size_type capacity() const noexcept;
+            void shrink_to_fit();
         /* Modifiers */
         public:
-            void push_back(const T& value);
             void clear() noexcept;
+            void push_back(const T& value);
+            void pop_back();
         /* Member functions (Iterators) */
         private:
             value_type * _arr;
