@@ -14,13 +14,13 @@ random_access_iterator<T> &random_access_iterator<T>::operator=(const random_acc
 };
 
 template<typename T>
-bool random_access_iterator<T>::operator==(const random_access_iterator<T> &other)
+bool random_access_iterator<T>::operator==(const random_access_iterator<T> &other) const
 {
     return (_ptr == other._ptr);
 };
 
 template<typename T>
-bool random_access_iterator<T>::operator!=(const random_access_iterator<T> &other)
+bool random_access_iterator<T>::operator!=(const random_access_iterator<T> &other) const
 {
     return (_ptr != other._ptr);
 };
@@ -94,7 +94,7 @@ random_access_iterator<T> random_access_iterator<T>::operator-(int a) const
 template<typename T>
 int random_access_iterator<T>::operator-(const random_access_iterator<T> &other) const
 {
-    return (random_access_iterator<T>(_ptr - other._ptr));
+    return (_ptr - other._ptr);
 };
 
 template<typename T>
@@ -138,13 +138,13 @@ random_access_iterator<T> &random_access_iterator<T>::operator-=(int a)
 template<typename T>
 typename random_access_iterator<T>::reference random_access_iterator<T>::operator[](size_type pos)
 {
-    return (*_ptr);
+    return (*(_ptr + pos));
 };
 
 template<typename T>
 typename random_access_iterator<T>::const_reference random_access_iterator<T>::operator[](size_type pos) const
 {
-    return (*_ptr);
+    return (*(_ptr + pos));
 };
 
 

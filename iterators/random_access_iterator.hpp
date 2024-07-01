@@ -11,14 +11,15 @@ namespace ft
             typedef value_type&         reference;
             typedef const value_type&   const_reference;
             typedef value_type*         pointer;
-            typedef const value_type*   const_pointer; 
+            typedef const value_type*   const_pointer;
+            typedef ptrdiff_t           difference_type;
         public:
             random_access_iterator();
             random_access_iterator(T *);
             random_access_iterator<T> &operator=(const random_access_iterator<T> &);
         public:
-            bool operator==(const random_access_iterator<T> &);
-            bool operator!=(const random_access_iterator<T> &);
+            bool operator==(const random_access_iterator<T> &) const;
+            bool operator!=(const random_access_iterator<T> &) const;
             reference operator*();
             const_reference operator*() const;
             pointer operator->();
