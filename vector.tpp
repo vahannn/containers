@@ -45,7 +45,7 @@ namespace	ft
         _size = other._size;
         _cap = other._cap;
         _arr = other._arr;
-        other.clear();
+        // other.clear();
         other._arr = NULL;
         other._cap = 0;
     };
@@ -262,12 +262,65 @@ namespace	ft
     template <typename T, typename Allocator>
     typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, const T& value)
     {
-        if (pos == _size) {
+        int size = pos - this->begin();
+        if (size >= 0 && static_cast<size_type>(size) == _size) {
             this->push_back(value);
-            return (_size - 1);
+            return (iterator(_arr + _size - 1));
+        }
+       
+        return (this->insert(pos, 1, value));
+    };
+
+    template <typename T, typename Allocator>
+    typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, T&& value)
+    {
+        int size = pos - this->begin();
+        if (size >= 0 && static_cast<size_type>(size) == _size) {
+            this->push_back(std::move(value));
+            return (iterator(_arr + _size - 1));
         }
 
+        size_type start = pos - this->begin();
 
+        if (_size + 1 > _cap) {
+            size_type tmpCap = _size + 1 <= _cap * 2 ? _cap * 2 : _size + 1;
+            std::cout << "tmpCap = " << tmpCap << std::endl;
+
+            value_type *tmpArr = _alloc.allocate(tmpCap);
+            size_type i = 0;
+
+            for (size_type end = start; i < end; i++) {
+                _alloc.construct(tmpArr + i, _arr[i]);
+                _alloc.destroy(_arr + i);
+            }
+            size_type j = i;
+
+            for (; i < start + 1; i++) {
+                _alloc.construct(tmpArr + i, std::move(value));
+            }
+            for (; j < _size; j++) {
+                _alloc.construct(tmpArr + i, _arr[j]);
+                _alloc.destroy(_arr + j);
+                i++;
+            }
+            _alloc.deallocate(_arr, _cap);
+            _cap = tmpCap;
+            _arr = tmpArr;
+        } else {
+            size_type i = _size == 0 ? 0 : _size - 1;
+            std::cout << "i = " << i << std::endl;
+
+            for (; i >= start; i--) {
+                *(_arr + i + 1) = std::move(*(_arr + i));
+                if (i == 0) {
+                    i--;
+                    break;
+                }
+            }
+            _alloc.construct(_arr + start, std::move(value));
+        }
+        _size += 1;
+        return (iterator(pos));
     };
 
     template <typename T, typename Allocator>
@@ -277,19 +330,21 @@ namespace	ft
             return iterator(this->begin());
         }
 
+        size_type start = pos - this->begin();
+
         if (_size + count > _cap) {
             size_type tmpCap = _size + count <= _cap * 2 ? _cap * 2 : _size + count;
 
             value_type *tmpArr = _alloc.allocate(tmpCap);
             size_type i = 0;
 
-            for (size_type end = pos - this->begin(); i < end; i++) {
+            for (size_type end = start; i < end; i++) {
                 _alloc.construct(tmpArr + i, _arr[i]);
                 _alloc.destroy(_arr + i);
             }
             size_type j = i;
 
-            for (; i < count; i++) {
+            for (; i < start + count; i++) {
                 _alloc.construct(tmpArr + i, value);
             }
             for (; j < _size; j++) {
@@ -298,25 +353,88 @@ namespace	ft
                 i++;
             }
             _alloc.deallocate(_arr, _cap);
-            _size += count;
             _cap = tmpCap;
             _arr = tmpArr;
         } else {
-            size_type i = pos - this->begin();
+            size_type i = _size == 0 ? 0 : _size - 1;
+            for (; i >= start; i--) {
+                *(_arr + i + count) = std::move(*(_arr + i));
+                if (i == 0) {
+                    i--;
+                    break;
+                }
+            }
+            i++;
+            for (; i < start + count; i++) {
+                _alloc.construct(_arr + i, value);
+            }
+        }
+        _size += count;
+        return (iterator(this->begin() + start));
+    };
 
-            for (; i < count; i++) {
-                
+    template <typename T, typename Allocator>
+    template< typename InputIt>
+    typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, InputIt first, InputIt last,
+        typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type)
+    {
+        typename InputIt::difference_type inputSize = ft::distance<InputIt>(first, last);
+
+
+        if (inputSize <= 0) {
+            return iterator(this->begin());
+        }
+
+        size_type count = inputSize;
+        size_type start = pos - this->begin();
+
+        if (_size + count > _cap) {
+            size_type tmpCap = _size + count <= _cap * 2 ? _cap * 2 : _size + count;
+            std::cout << "tmpCap = " << tmpCap << std::endl;
+
+            value_type *tmpArr = _alloc.allocate(tmpCap);
+            size_type i = 0;
+
+            for (size_type end = start; i < end; i++) {
                 _alloc.construct(tmpArr + i, _arr[i]);
                 _alloc.destroy(_arr + i);
             }
+            size_type j = i;
+
+            for (; first != last; i++) {
+                _alloc.construct(tmpArr + i, *(first)++);
+            }
+            for (; j < _size; j++) {
+                _alloc.construct(tmpArr + i, _arr[j]);
+                _alloc.destroy(_arr + j);
+                i++;
+            }
+            _alloc.deallocate(_arr, _cap);
+            _cap = tmpCap;
+            _arr = tmpArr;
+        } else {
+            size_type i = _size == 0 ? 0 : _size - 1;
+            std::cout << "i = " << i << std::endl;
+
+            for (; i >= start; i--) {
+                *(_arr + i + count) = std::move(*(_arr + i));
+                if (i == 0) {
+                    i--;
+                    break;
+                }
+            }
+            i++;
+            for (; first != last; i++) {
+                _alloc.construct(_arr + i, *(first)++);
+            }
         }
+        _size += count;
+        return (iterator(pos));
     };
 
     template <typename T, typename Allocator>
     void vector<T, Allocator>::push_back(const T& value)
     {
-        // std::cout << "_size = " << _size << std::endl;
-        // std::cout << "_cap = " << _cap << std::endl;
         if (_size >= _cap) {
             if (_cap == 0)
                 _cap = 1;
@@ -326,6 +444,20 @@ namespace	ft
         }
 
         _alloc.construct(_arr + _size++, value);
+    };
+
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::push_back(T&& value)
+    {
+        if (_size >= _cap) {
+            if (_cap == 0)
+                _cap = 1;
+            else
+                _cap = _cap * 2 > _alloc.max_size() ? _alloc.max_size() : _cap * 2;
+            this->reserve(_cap);
+        }
+
+        _alloc.construct(_arr + _size++, std::move(value));
     };
 
     template <typename T, typename Allocator>

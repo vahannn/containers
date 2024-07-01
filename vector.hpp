@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include "./iterators/random_access_iterator.hpp"
+#include "./algorithms/distance.hpp"
 
 namespace ft
 {
@@ -21,6 +22,7 @@ namespace ft
             typedef const value_type*                       const_pointer;
             typedef ft::random_access_iterator<T>           iterator;
             typedef const ft::random_access_iterator<T>     const_iterator;
+            typedef ptrdiff_t                               difference_type;
 
         /* Constructers and Destructer */
         public:
@@ -65,9 +67,14 @@ namespace ft
         /* Modifiers */
         public:
             iterator insert(const_iterator pos, const T& value);
+            iterator insert(const_iterator pos, T&& value);
             iterator insert(const_iterator pos, size_type count, const T& value);
+            template <typename InputIt>
+            iterator insert(const_iterator pos, InputIt first, InputIt last, 
+                typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type = true);
             void clear() noexcept;
             void push_back(const T& value);
+            void push_back(T&& value);
             void pop_back();
             // template< class... Args >
             // reference emplace_back( Args&&... args );
