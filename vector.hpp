@@ -72,6 +72,8 @@ namespace ft
             template <typename InputIt>
             iterator insert(const_iterator pos, InputIt first, InputIt last, 
                 typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type = true);
+            iterator erase( iterator pos );
+            iterator erase( iterator first, iterator last );
             void clear() noexcept;
             void push_back(const T& value);
             void push_back(T&& value);
