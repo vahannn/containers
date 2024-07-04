@@ -40,7 +40,7 @@ namespace	ft
     template <typename T, typename Allocator>
     vector<T, Allocator>::vector(vector&& other) noexcept
     {
-        std::cout << "move\n";
+        // std::cout << "move\n";
         _alloc = std::move(other._alloc);
         _size = other._size;
         _cap = other._cap;
@@ -51,6 +51,24 @@ namespace	ft
     };
 
     template <typename T, typename Allocator>
+    template< class InputIt >
+    vector<T, Allocator>::vector( InputIt first, InputIt last, const Allocator& alloc,
+            typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type) {
+        size_type inputSize = _distance<InputIt>(first, last);
+        _size = inputSize;
+
+        _alloc = alloc;
+        _arr = _size != 0 ? _alloc.allocate(_size) : NULL;
+        _cap = _size;
+        size_type i = 0;
+        while (first != last) {
+            _alloc.construct(_arr + i, *first);
+            ++first;
+            ++i;
+        }
+    };
+
+    template <typename T, typename Allocator>
     vector<T, Allocator>::~vector()
     {
         for (size_type i = 0; i < _size; i++) {
@@ -58,6 +76,40 @@ namespace	ft
         }
         if (_arr)
             _alloc.deallocate(_arr, _cap);
+    };
+
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::assign( size_type count, const T& value ) {
+        this->clear();
+        this->insert(this->begin(), count, value);
+    };
+
+    template <typename T, typename Allocator>
+    template < class InputIt >
+    void vector<T, Allocator>::assign( InputIt first, InputIt last ) {
+        this->clear();
+        this->insert(this->begin(), first, last);
+    };
+
+    template <typename T, typename Allocator>
+    vector<T, Allocator> &vector<T, Allocator>::operator=(const vector &other) noexcept
+    {
+        if (this != &other)
+        {
+            if (_arr) {
+                this->clear();
+                _alloc.deallocate(_arr, _cap);
+            }
+            _alloc = other._alloc;
+            _arr = other._size != 0 ? _alloc.allocate(other._size) : NULL;
+            _size = other._size;
+            _cap = other._cap;
+
+            for (size_type i = 0; i < other._size; i++) {
+                _alloc.construct(_arr + i, other._arr[i]);
+            }
+        }
+        return (*this);
     };
 
     /* Element access */
@@ -132,28 +184,6 @@ namespace	ft
     typename vector<T, Allocator>::allocator_type vector<T, Allocator>::get_allocator() const noexcept
     {
         return (_alloc);
-    };
-
-
-    template <typename T, typename Allocator>
-    vector<T, Allocator> &vector<T, Allocator>::operator=(const vector &other) noexcept
-    {
-        if (this != &other)
-        {
-            if (_arr) {
-                this->clear();
-                _alloc.deallocate(_arr, _cap);
-            }
-            _alloc = other._alloc;
-            _arr = other._size != 0 ? _alloc.allocate(other._size) : NULL;
-            _size = other._size;
-            _cap = other._cap;
-
-            for (size_type i = 0; i < other._size; i++) {
-                _alloc.construct(_arr + i, other._arr[i]);
-            }
-        }
-        return (*this);
     };
 
     // template <typename T, typename Allocator>
@@ -382,7 +412,7 @@ namespace	ft
     typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, InputIt first, InputIt last,
         typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type)
     {
-        typename InputIt::difference_type inputSize = ft::distance<InputIt>(first, last);
+        typename InputIt::difference_type inputSize = _distance<InputIt>(first, last);
 
 
         if (inputSize <= 0) {
@@ -572,6 +602,19 @@ namespace	ft
         std::swap(_alloc, other._alloc);
     };
 
+    template<typename T, typename Allocator>
+    template <typename InputIt>
+    typename vector<T, Allocator>::size_type vector<T, Allocator>::_distance(InputIt start, InputIt end) {
+        size_type distance = 0;
+        InputIt it = start;
+
+        while (it != end){
+            distance++;
+            it++;
+        }
+        return distance;
+    };
+
     /* Non-member functions */
     template<typename T, typename Allocator>
     bool operator==( const vector<T, Allocator>& lhs,
@@ -589,4 +632,8 @@ namespace	ft
         }
         return (true);
     };
+
+  
 }
+// typename vector<T, Allocator>::iterator
+

@@ -6,7 +6,7 @@ namespace ft
     typename InputIt::difference_type \
     distance(InputIt first, InputIt last)
     {
-        typename InputIt::size_type count = 0;
+        typename InputIt::difference_type count = 0;
         while (first != last) {
             first++;
             count++;

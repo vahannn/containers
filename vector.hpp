@@ -31,12 +31,18 @@ namespace ft
                 const T& value = T());
             vector(const vector &other);
             vector( vector&& other ) noexcept;
+            template< class InputIt >
+            vector( InputIt first, InputIt last, const Allocator& alloc = allocator_type(),
+                typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type = true);
             // vector( std::initializer_list<T> init, 
                 // const Allocator& alloc = Allocator() );
             ~vector();
 
             vector &operator=(const vector &other) noexcept;
             void assign( size_type count, const T& value );
+            template< class InputIt >
+            void assign( InputIt first, InputIt last );
+            // void assign( std::initializer_list<T> ilist );
         /* Element access */
         public:
             reference at( size_type pos );
@@ -83,7 +89,10 @@ namespace ft
             // template< class... Args >
             // reference emplace_back( Args&&... args );
             void swap(vector& other) noexcept;
-        /* Member functions (Iterators) */
+
+        private:
+            template <typename InputIt>
+            size_type _distance(InputIt start, InputIt end);
         private:
             value_type * _arr;
             size_type _size;
