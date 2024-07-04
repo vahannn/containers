@@ -503,6 +503,67 @@ namespace	ft
     };
 
     template <typename T, typename Allocator>
+    void vector<T, Allocator>::resize( size_type count ) {
+        if (_size == count) {
+            return ;
+        }
+        if (_size > count) {
+            size_type i = count;
+
+            while (i < _size) {
+                _alloc.destroy(_arr + i);
+                i++;
+            }
+        } else {
+            while (count > _cap) {
+                if (_cap == 0)
+                    _cap = 1;
+                else
+                    _cap = _cap * 2 > _alloc.max_size() ? _alloc.max_size() : _cap * 2;
+            }
+            this->reserve(_cap);
+            size_type i = _size;
+
+            while (i < _size) {
+                _alloc.construct(_arr + i, T());
+                i++;
+            }
+        }
+        _size = count;
+    };
+
+    template <typename T, typename Allocator>
+    void vector<T, Allocator>::resize( size_type count, const value_type& value ) {
+        if (_size == count) {
+            return ;
+        }
+
+        if (_size > count) {
+            size_type i = count;
+
+            while (i < _size) {
+                _alloc.destroy(_arr + i);
+                i++;
+            }
+        } else {
+            while (count > _cap) {
+                if (_cap == 0)
+                    _cap = 1;
+                else
+                    _cap = _cap * 2 > _alloc.max_size() ? _alloc.max_size() : _cap * 2;
+            }
+            this->reserve(_cap);
+            size_type i = _size;
+
+            while (i < count) {
+                _alloc.construct(_arr + i, T(value));
+                i++;
+            }
+        }
+        _size = count;
+    };
+
+    template <typename T, typename Allocator>
     void vector<T, Allocator>::swap(vector& other) noexcept
     {
         std::swap(_arr, other._arr);

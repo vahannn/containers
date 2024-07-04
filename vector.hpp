@@ -78,6 +78,8 @@ namespace ft
             void push_back(const T& value);
             void push_back(T&& value);
             void pop_back();
+            void resize( size_type count );
+            void resize( size_type count, const value_type& value );
             // template< class... Args >
             // reference emplace_back( Args&&... args );
             void swap(vector& other) noexcept;
