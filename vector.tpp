@@ -218,7 +218,7 @@ namespace	ft
         pointer tmpArr = _alloc.allocate(new_cap);
 
         for (size_type i = 0; i < _size; i++) {
-            _alloc.construct(tmpArr + i, _arr[i]);
+            _alloc.construct(tmpArr + i, std::move(_arr[i]));
             _alloc.destroy(_arr + i);
         }
         _alloc.deallocate(_arr, _cap);
