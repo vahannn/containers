@@ -69,6 +69,12 @@ namespace	ft
     };
 
     template <typename T, typename Allocator>
+     vector<T, Allocator>::vector( std::initializer_list<T> init, 
+                const Allocator& alloc) {
+        *this = vector(init.begin(), init.end(), alloc);
+    };
+
+    template <typename T, typename Allocator>
     vector<T, Allocator>::~vector()
     {
         for (size_type i = 0; i < _size; i++) {

@@ -34,8 +34,8 @@ namespace ft
             template< class InputIt >
             vector( InputIt first, InputIt last, const Allocator& alloc = allocator_type(),
                 typename std::enable_if<!std::is_integral<InputIt>::value, bool>::type = true);
-            // vector( std::initializer_list<T> init, 
-                // const Allocator& alloc = Allocator() );
+            vector( std::initializer_list<T> init, 
+                const Allocator& alloc = Allocator() );
             ~vector();
 
             vector &operator=(const vector &other) noexcept;
